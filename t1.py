@@ -47,10 +47,30 @@ class Tablero:
         for _ in range(self.guardias):
             while True:
                 row = random.randint(0, 10)
-                col = random.randint(0, self.largo - 2)  # (sin tocar la columna final)
+                col = random.randint(0, self.largo - 2)
                 if self.tablero[row][col] == '░':
                     self.tablero[row][col] = '!'
                     break
+
+    def mover_snake(self, direccion, pasos):
+        """Mueve al jugador."""
+        fila, col = self.snake_pos
+        self.tablero[fila][col] = '░'  # Limpia la posición anterior
+
+        for _ in range(pasos):
+            if direccion == 'w' and fila > 0:
+                fila -= 1
+            elif direccion == 's' and fila < 10:
+                fila += 1
+            elif direccion == 'a' and col > 0:
+                col -= 1
+            elif direccion == 'd' and col < self.largo - 1:
+                col += 1
+            else:
+                break  # Evita moverse fuera del tablero
+
+        self.snake_pos = (fila, col)
+        self.tablero[fila][col] = 'S'
 
     def mostrar(self):
         for row in self.tablero:
@@ -58,7 +78,7 @@ class Tablero:
         print()
 
 def main():
-    """funcion main"""
+    """Función main"""
     print("Bienvenido a METAL GEAR SOLID 1010: BINARY SNAKE")
     largo = int(input("Ingrese el largo del pasillo: "))
     guardias = int(input("Ingrese la cantidad de guardias: "))
@@ -66,12 +86,16 @@ def main():
 
     while True:
         tablero.mostrar()
-        print("Ingresa una accion!")
+        print("Ingresa una acción:")
         print("w: moverse hacia arriba")
-        print("a: moverse hacia abajo")
-        print("s: moverse a la izquierda")
+        print("s: moverse hacia abajo")
+        print("a: moverse a la izquierda")
         print("d: moverse a la derecha")
         print("-1: salir")
-        mov = input()
-        l_mov = input("Escreibe la cantidad de pasos que quieres moverte en formato:")
+        mov = input("Dirección: ")
+        if mov == "-1":
+            break
+        pasos = int(input("Cantidad de pasos: "))
+        tablero.mover_snake(mov, pasos)
+
 main()
