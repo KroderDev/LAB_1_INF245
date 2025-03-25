@@ -23,6 +23,63 @@ def convertir_a_decimal(num, base):
     except:
         raise ValueError('Ocurrió un error inesperado')
 
+def convertir_a_decimal2(num, base): #hice mi propia version de la funcion xd, no se que te parece
+    """Convierte un número de base BIN, OCT o HEX a decimal manualmente."""
+    # Definir bien las bases
+    bases_validas = {
+        'BIN': ('01', 2),
+        'OCT': ('01234567', 8),
+        'HEX': ('0123456789ABCDEF', 16)}
+
+    base = str(base).upper()
+    if base not in bases_validas:
+        return f"Base {base} no existe."
+
+
+    caracteres_validos, base_num = bases_validas[base]
+    decimal = 0
+    potencia = 0
+
+    # Convertir el número a mayúsculas para manejar HEX correctamente
+    num = str(num).upper()
+
+    # Recorrer el número de derecha a izquierda
+    for digito in reversed(num):
+        if digito not in caracteres_validos:
+            return f"El número {num} no es válido en base {base}."
+
+        valor = caracteres_validos.index(digito)  # Obtener su valor en la base
+        decimal += valor * (base_num ** potencia)
+        potencia += 1
+
+    return decimal
+
+def convertir_a_decimal2(num, base):
+    """Convierte un número de base BIN, OCT o HEX a decimal manualmente."""
+    # Definir bien las bases
+    bases_validas = {
+        'BIN': ('01', 2),
+        'OCT': ('01234567', 8),
+        'HEX': ('0123456789ABCDEF', 16)}
+
+    if base not in bases_validas:
+        raise ValueError(f"Base no soportada: {base}")
+
+    caracteres_validos, base_num = bases_validas[base]
+    decimal = 0
+    potencia = 0
+
+    num = str(num).upper()
+    for digito in reversed(num):
+        if digito not in caracteres_validos:
+            raise ValueError(f"El número {num} no es válido en base {base}.")
+
+        valor = caracteres_validos.index(digito)
+        decimal += valor * (base_num ** potencia)
+        potencia += 1
+
+    return decimal
+
 class Tablero:
     """Tablero"""
     def __init__(self, largo, guardias):
