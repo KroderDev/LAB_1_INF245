@@ -11,7 +11,7 @@ def convertir_a_decimal(num, base):
                         decimal += 2**power
                     elif i != '0': # Manejo de error
                         raise('El número binario es inválido.')
-                    
+
                     power+=1 # incrementar la potencia
                 return decimal
             case 'OCT':
@@ -24,6 +24,7 @@ def convertir_a_decimal(num, base):
         raise ValueError('Ocurrió un error inesperado')
 
 class Tablero:
+    """Tablero"""
     def __init__(self, largo, guardias):
         self.largo = largo
         self.guardias = guardias
@@ -36,12 +37,12 @@ class Tablero:
         """Genera el tablero inicial con Snake, objetivo y guardias."""
         # Colocar Snake
         self.tablero[self.snake_pos[0]][self.snake_pos[1]] = 'S'
-        
+
         # Colocar Objetivo
         objetivo_row = random.randint(0, 10)
         self.objetivo_pos = (objetivo_row, self.largo - 1)
         self.tablero[objetivo_row][self.largo - 1] = '*'
-        
+
         # Colocar Guardias
         for _ in range(self.guardias):
             while True:
@@ -57,11 +58,20 @@ class Tablero:
         print()
 
 def main():
+    """funcion main"""
     print("Bienvenido a METAL GEAR SOLID 1010: BINARY SNAKE")
     largo = int(input("Ingrese el largo del pasillo: "))
     guardias = int(input("Ingrese la cantidad de guardias: "))
-    
     tablero = Tablero(largo, guardias)
-    tablero.mostrar()
 
+    while True:
+        tablero.mostrar()
+        print("Ingresa una accion!")
+        print("w: moverse hacia arriba")
+        print("a: moverse hacia abajo")
+        print("s: moverse a la izquierda")
+        print("d: moverse a la derecha")
+        print("-1: salir")
+        mov = input()
+        l_mov = input("Escreibe la cantidad de pasos que quieres moverte en formato:")
 main()
