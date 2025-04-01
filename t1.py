@@ -1,4 +1,20 @@
 import random
+import re
+
+# Diccionario para las direcciones
+directions = {
+    'w': 'Arriba',
+    's': 'Abajo',
+    'a': 'Izquierda',
+    'd': 'Derecha'
+}
+
+# Dicccionario para las bases
+bases = {
+    'BIN': {'key':'BIN', 'name':'Binario', 'regex':r'^[01]+$'},
+    'OCT': {'key':'OCT', 'name':'Octal', 'regex':r'^[0-7]+$'},
+    'HEX': {'key':'HEX', 'name':'Hexadecimal', 'regex':r'^[0-9A-Fa-f]+$'}
+}
 
 def convertir_a_decimal(num, base):
     try:
@@ -15,11 +31,19 @@ def convertir_a_decimal(num, base):
                     power+=1 # incrementar la potencia
                 return decimal
             case 'OCT':
-                pass
+                decimal = 0
+                power = 0
+
+                # Recorrer dígitos de derecha a izquierda
+                for i in reversed(str(num)):
+                    decimal += int(i) * (8 ** power)
+                    power += 1
+
+                return decimal
             case 'HEX':
-                pass
+                return 0
             case _:
-                return None
+                return 0
     except:
         raise ValueError('Ocurrió un error inesperado')
 
@@ -49,32 +73,6 @@ def convertir_a_decimal2(num, base): #hice mi propia version de la funcion xd, n
             return f"El número {num} no es válido en base {base}."
 
         valor = caracteres_validos.index(digito)  # Obtener su valor en la base
-        decimal += valor * (base_num ** potencia)
-        potencia += 1
-
-    return decimal
-
-def convertir_a_decimal2(num, base):
-    """Convierte un número de base BIN, OCT o HEX a decimal manualmente."""
-    # Definir bien las bases
-    bases_validas = {
-        'BIN': ('01', 2),
-        'OCT': ('01234567', 8),
-        'HEX': ('0123456789ABCDEF', 16)}
-
-    if base not in bases_validas:
-        raise ValueError(f"Base no soportada: {base}")
-
-    caracteres_validos, base_num = bases_validas[base]
-    decimal = 0
-    potencia = 0
-
-    num = str(num).upper()
-    for digito in reversed(num):
-        if digito not in caracteres_validos:
-            raise ValueError(f"El número {num} no es válido en base {base}.")
-
-        valor = caracteres_validos.index(digito)
         decimal += valor * (base_num ** potencia)
         potencia += 1
 
@@ -141,6 +139,14 @@ def main():
     guardias = int(input("Ingrese la cantidad de guardias: "))
     tablero = Tablero(largo, guardias)
 
+    # SET BASE
+    if largo <= 20:
+        base = bases['BIN']
+    elif largo <= 100:
+        base = bases['OCT']
+    else:
+        base = bases['HEX']
+
     while True:
         tablero.mostrar()
         print("Ingresa una acción:")
@@ -152,7 +158,16 @@ def main():
         mov = input("Dirección: ")
         if mov == "-1":
             break
-        pasos = int(input("Cantidad de pasos: "))
+
+        # Solicitar y validar entrada para la base
+        while True:
+            num_input = input("Escribe la cantidad de pasos que quieres moverte hacia %s en formato %s: " % (directions[mov], base['name']))
+            if re.fullmatch(base['regex'], num_input):
+                break
+            else:
+                print("El valor ingresado no es válido para la base %s. Intenta de nuevo." % base['name'])
+
+        pasos = convertir_a_decimal(num_input, base['key'])
         tablero.mover_snake(mov, pasos)
 
 main()
