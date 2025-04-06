@@ -170,4 +170,5 @@ def main():
         pasos = convertir_a_decimal(num_input, base['key'])
         tablero.mover_snake(mov, pasos)
 
-main()
+if __name__ == "__main__":
+    main()
