@@ -41,7 +41,17 @@ def convertir_a_decimal(num, base):
 
                 return decimal
             case 'HEX':
-                return 0
+                decimal = 0
+                power = 0
+                hex_digits = '0123456789ABCDEF'
+
+                for i in reversed(str(num).upper()):  # Trabajamos con mayúsculas
+                    if i not in hex_digits:
+                        raise ValueError('El número hexadecimal es inválido.')
+                    decimal += hex_digits.index(i) * (16 ** power)
+                    power += 1
+
+                return decimal
             case _:
                 return 0
     except:
