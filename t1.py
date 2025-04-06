@@ -312,7 +312,5 @@ def main():
         tablero.mover_snake(mov, pasos)
 
 if __name__ == "__main__":
-    #main()
-    tablero = Tablero(10, 5)
-    iniciar_hackeo(tablero, 'BIN')
+    main()
     
