@@ -16,6 +16,7 @@ print(convertir_a_decimal(77, 'OCT')) # 63
 
 print(convertir_a_decimal('A', 'HEX')) # 10
 print(convertir_a_decimal('1F', 'HEX')) # 31
+print(convertir_a_decimal('A1', 'HEX')) # 161
 print(convertir_a_decimal('ABC', 'HEX')) # 2748
 print(convertir_a_decimal('FF', 'HEX')) # 255
 print(convertir_a_decimal('0', 'HEX')) # 0
