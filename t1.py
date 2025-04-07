@@ -310,6 +310,9 @@ def main():
 
         pasos = convertir_a_decimal(num_input, base['key'])
         tablero.mover_snake(mov, pasos)
+        if tablero.snake_pos == tablero.objetivo_pos:
+            iniciar_hackeo(tablero, base['key'])
+            break
 
 if __name__ == "__main__":
     main()
