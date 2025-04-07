@@ -309,8 +309,26 @@ def main():
                 print("El valor ingresado no es válido para la base %s. Intenta de nuevo." % base['name'])
 
         pasos = convertir_a_decimal(num_input, base['key'])
+        fila, col = tablero.snake_pos
+        for _ in range(pasos):
+            if mov == 'w' and fila > 0:
+                fila -= 1
+            elif mov == 's' and fila < 10:
+                fila += 1
+            elif mov == 'a' and col > 0:
+                col -= 1
+            elif mov == 'd' and col < tablero.largo - 1:
+                col += 1
+            else:
+                break
+
+        celda_destino = tablero.tablero[fila][col]
         tablero.mover_snake(mov, pasos)
-        if tablero.snake_pos == tablero.objetivo_pos:
+
+        if celda_destino == '!':
+            derrota(tablero)
+            break
+        elif celda_destino == '*':
             iniciar_hackeo(tablero, base['key'])
             break
 
