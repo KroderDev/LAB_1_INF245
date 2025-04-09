@@ -25,6 +25,7 @@ class Tablero:
         self.tablero = [['░' for _ in range(largo)] for _ in range(11)]
         self.snake_pos = (5, 0)  # Posicion Snake
         self.objetivo_pos = None
+        self.base = bases['BIN'] if largo <= 20 else bases['OCT'] if largo <= 100 else bases['HEX']
         self.generar_tablero()
 
     def generar_tablero(self):
@@ -52,16 +53,36 @@ class Tablero:
         self.tablero[fila][col] = '░'  # Limpia la posición anterior
 
         for _ in range(pasos):
+            # Calcula la nueva posición
+            nueva_fila, nueva_col = fila, col
+
             if direccion == 'w' and fila > 0:
-                fila -= 1
+                nueva_fila -= 1
             elif direccion == 's' and fila < 10:
-                fila += 1
+                nueva_fila += 1
             elif direccion == 'a' and col > 0:
-                col -= 1
+                nueva_col -= 1
             elif direccion == 'd' and col < self.largo - 1:
-                col += 1
+                nueva_col += 1
             else:
                 break  # Evita moverse fuera del tablero
+
+            # Verificación de guardia
+            if self.tablero[nueva_fila][nueva_col] == '!':
+                self.snake_pos = (nueva_fila, nueva_col)
+                self.tablero[nueva_fila][nueva_col] = 'S'
+                derrota()  # Snake ha sido detectado
+                return
+
+            # Verificación de objetivo
+            if self.tablero[nueva_fila][nueva_col] == '*':
+                self.snake_pos = (nueva_fila, nueva_col)
+                self.tablero[nueva_fila][nueva_col] = 'S'
+                iniciar_hackeo(self)  # Iniciar hackeo
+                return
+
+            # Movimiento válido
+            fila, col = nueva_fila, nueva_col
 
         self.snake_pos = (fila, col)
         self.tablero[fila][col] = 'S'
@@ -140,7 +161,8 @@ def convertir_a_hexadecimal(num: int) -> str:
         num //= 16
     return hexadecimal
 
-def iniciar_hackeo(tablero: Tablero, base: str):
+def iniciar_hackeo(tablero: Tablero):
+    print(tablero.base['name'])
     # Iniciamos el hackeo
     print("Iniciando hackeo", end="")
     for _ in range(3):
@@ -157,11 +179,11 @@ def iniciar_hackeo(tablero: Tablero, base: str):
     print("")
     
     # Generamos una clave de hackeo aleatoria
-    if base == 'BIN':
+    if tablero.base['key'] == 'BIN':
         clave_hackeo = convertir_a_binario(random.randint(0, 20))
-    elif base == 'OCT':
+    elif tablero.base['key'] == 'OCT':
         clave_hackeo = convertir_a_octal(random.randint(0, 100))
-    elif base == 'HEX':
+    elif tablero.base['key'] == 'HEX':
         clave_hackeo = convertir_a_hexadecimal(random.randint(0, 500))
 
     print(f"La clave encriptada es: {clave_hackeo}")
@@ -184,22 +206,22 @@ def iniciar_hackeo(tablero: Tablero, base: str):
     print("")
 
     # Verificamos si la clave es correcta
-    if base == 'BIN':
+    if tablero.base['key'] == 'BIN':
         clave_correcta = clave_hackeo == convertir_a_binario(input_usuario)
-    elif base == 'OCT':
+    elif tablero.base['key'] == 'OCT':
         clave_correcta = clave_hackeo == convertir_a_octal(input_usuario)
-    elif base == 'HEX':
+    elif tablero.base['key'] == 'HEX':
         clave_correcta = clave_hackeo == convertir_a_hexadecimal(input_usuario)
 
     # Mostramos el resultado del hackeo
     if clave_correcta == True:
         print("Hackeo exitoso. Acceso concedido.") 
-        victoria(tablero) # Si el hackeo es exitoso, se llama a la funcion de victoria
+        victoria() # Si el hackeo es exitoso, se llama a la funcion de victoria
     else:
         print("Hackeo fallido. Acceso denegado.")
-        derrota(tablero) # Si el hackeo falla, se llama a la funcion de derrota
+        derrota() # Si el hackeo falla, se llama a la funcion de derrota
 
-def victoria(tablero: Tablero):
+def victoria():
     print(r"""
 ███████╗██╗   ██╗ ██████╗ ██████╗███████╗███████╗███████╗
 ██╔════╝██║   ██║██╔════╝██╔════╝██╔════╝██╔════╝██╔════╝
@@ -211,7 +233,7 @@ def victoria(tablero: Tablero):
     print("¡MISIÓN CUMPLIDA! Te has infiltrado con éxito.")
     exit(0)
 
-def derrota(tablero: Tablero):
+def derrota():
     print(r"""
 ███████╗ █████╗ ██╗██╗     ███████╗██████╗ 
 ██╔════╝██╔══██╗██║██║     ██╔════╝██╔══██╗
@@ -246,14 +268,6 @@ def main():
     # Crear el tablero
     tablero = Tablero(largo, guardias)
 
-    # SET BASE
-    if largo <= 20:
-        base = bases['BIN']
-    elif largo <= 100:
-        base = bases['OCT']
-    else:
-        base = bases['HEX']
-
     while True:
         tablero.mostrar()
         print("Ingresa una acción:")
@@ -271,35 +285,14 @@ def main():
 
         # Solicitar y validar entrada para la base
         while True:
-            num_input = input("Escribe la cantidad de pasos que quieres moverte hacia %s en formato %s: " % (directions[mov], base['name']))
-            if re.fullmatch(base['regex'], num_input):
+            num_input = input("Escribe la cantidad de pasos que quieres moverte hacia %s en formato %s: " % (directions[mov], tablero.base['name']))
+            if re.fullmatch(tablero.base['regex'], num_input):
                 break
             else:
-                print("El valor ingresado no es válido para la base %s. Intenta de nuevo." % base['name'])
+                print("El valor ingresado no es válido para la base %s. Intenta de nuevo." % tablero.base['name'])
 
-        pasos = convertir_a_decimal(num_input, base['key'])
-        fila, col = tablero.snake_pos
-        for _ in range(pasos):
-            if mov == 'w' and fila > 0:
-                fila -= 1
-            elif mov == 's' and fila < 10:
-                fila += 1
-            elif mov == 'a' and col > 0:
-                col -= 1
-            elif mov == 'd' and col < tablero.largo - 1:
-                col += 1
-            else:
-                break
-
-        celda_destino = tablero.tablero[fila][col]
+        pasos = convertir_a_decimal(num_input, tablero.base['key'])
         tablero.mover_snake(mov, pasos)
-
-        if celda_destino == '!':
-            derrota(tablero)
-            break
-        elif celda_destino == '*':
-            iniciar_hackeo(tablero, base['key'])
-            break
 
 if __name__ == "__main__":
     main()

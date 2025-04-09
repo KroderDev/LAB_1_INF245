@@ -75,6 +75,13 @@ Contiene la información para validar y convertir números en diferentes bases.
   - **name:** `'Hexadecimal'`
   - **regex:** `r'^[0-9A-Fa-f]+$'` (dígitos 0-9 y letras A-F)
 
+### Diccionario: `directions`
+Define las direcciones válidas en las que Snake puede moverse dentro del tablero, asociando cada tecla de control con su descripción textual.
+
+ * `'w'`: `'Arriba'` – Movimiento hacia arriba (fila anterior).
+ * `'s'`: `'Abajo'` – Movimiento hacia abajo (fila siguiente).
+ * `'a'`: `'Izquierda'` – Movimiento hacia la izquierda (columna anterior).
+ * `'d'`: `'Derecha'` – Movimiento hacia la derecha (columna siguiente).
 
 ### Clase: `Tablero`
 
@@ -89,12 +96,29 @@ Inicializa el tablero del juego.
 * `self.tablero`: Matriz que representa el tablero.
 * `self.snake_pos`: Posición inicial de la Snake.
 * `self.objetivo_pos`: Posición del objetivo.
+* `self.base`: Base del tablero.
 
 #### Método: `generar_tablero(self)`
 Genera el estado inicial del tablero.
 * Coloca a Snake (`'S'`) en la posición (5, 0).
 * Coloca el objetivo (`'*'`) en una posición aleatoria en la última columna.
 * Coloca los guardias (`'!'`) en posiciones aleatorias del tablero.
+
+#### Método: `mover_snake`
+Mueve a Snake (`'S'`) en una dirección específica, una cantidad determinada de pasos, siempre que no se salga del tablero.
+##### Parámetros:
+* `direccion` (`str`): Dirección del movimiento. Debe ser una de las siguientes:
+  * `'w'`: Mover arriba (norte).
+  * `'s'`: Mover abajo (sur).
+  * `'a'`: Mover a la izquierda (oeste).
+  * `'d'`: Mover a la derecha (este).
+* `pasos` (`int`): Cantidad de celdas a moverse en la dirección indicada.
+##### Comportamiento:
+* Limpia la posición actual de Snake en el tablero.
+* Mueve paso a paso en la dirección especificada, sin salirse de los límites del tablero.
+* Evalúa en cada paso si snake se encuentra con un elemento interactivo (`!`, `*`).
+
+Actualiza la posición de Snake y la refleja en el tablero.
 
 #### Método: `mostrar(self)`
 Muestra el estado actual del tablero por consola, fila por fila.
@@ -105,6 +129,43 @@ Muestra el estado actual del tablero por consola, fila por fila.
   * `'*'`: Objetivo.
   * `'!'`: Guardia (obstáculo).
 
+### Función: `victoria`
+Muestra un mensaje de victoria al completar la misión con éxito y termina la ejecución del juego.
+#### Comportamiento:
+* Imprime un arte ASCII celebrando la victoria.
+* Muestra un mensaje indicando que la misión fue completada exitosamente.
+* Finaliza el programa con `exit(0)`.
+
+### Función: `derrota`
+Muestra un mensaje de derrota cuando Snake es detectado por un guardia o falla el hackeo y finaliza el juego.
+#### Comportamiento:
+* Imprime un arte ASCII indicando fallo en la misión.
+* Muestra un mensaje de alerta informando que Snake fue detectado.
+* Finaliza el programa con `exit(0)`.
+
+### Función: `main`
+Inicia el entorno, solicita configuraciones iniciales y gestiona el ciclo principal de juego.
+#### Comportamiento:
+* Da la bienvenida al jugador.
+* Solicita al usuario el largo del pasillo (número de columnas del tablero).
+* Solicita el número de guardias a colocar en el tablero.
+* Crea una instancia de Tablero con los parámetros ingresados.
+* Entra en un ciclo donde:
+  * Muestra el estado actual del tablero.
+  * Solicita al jugador una dirección de movimiento (`w`, `s`, `a`, `d`).
+  * Verifica que la dirección sea válida.
+  * Solicita la cantidad de pasos a moverse, en una base numérica específica (`BIN`, `OCT`, o `HEX`) definida en el tablero.
+  * Convierte el número ingresado a decimal usando la función `convertir_a_decimal`.
+  * Mueve a Snake usando el método `mover_snake`.
+#### Entradas del Usuario:
+ * Largo del tablero (`entero`).
+ * Número de guardias (`entero`).
+ * Dirección del movimiento (`w`, `s`, `a`, `d` o `-1` para salir).
+ * Número de pasos (en base `BIN`, `OCT` o `HEX`).
+#### Salida:
+ * Muestra el estado del tablero tras cada turno.
+ * Mensajes de error si la entrada no es válida.
+ * Mensajes de victoria o derrota al finalizar el juego.
 ## Contacto
 * **Sebastián Richiardi**, Rol; 20203055-2, Paralelo: 201
 * **Gabriel Alejandro Toro Varela**, Rol; 202204557-4, Paralelo: 201
